@@ -41,5 +41,20 @@ def get_lat_lon(city_name:str):
     return response[0]['lat'], response[0]['lon']
 
 
-def get_forecast(lat:float, lon:float):
-    print()
+def get_forecast(city_name:str):
+    url='https://api.openweathermap.org/data/2.5/forecast'
+    lat,lon=get_lat_lon(city_name)
+    params={
+        'lat':lat,
+        'lon':lon,
+        'appid':openweather_api_key,
+        'units':'metric',
+        'lang':'us_en'
+    }
+    req = requests.get(url,params=params)
+    response = req.json()
+    print(response)
+
+
+
+get_forecast('new delhi')
