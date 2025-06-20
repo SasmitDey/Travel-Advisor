@@ -23,9 +23,6 @@ system_instruction_itenary=st.secrets["model"]["system_instruction_itenary"]
 
 
 
-weather_data_attribution="Weather data provided by OpenWeather\n\
-Hyperlink to our website https://openweathermap.org/ "
-
 #initialising gemini model
 client=genai.Client(
     api_key=gemini_api_key
@@ -83,7 +80,6 @@ def get_analysis(city_name:str,num_days:int,fav_activities:list[str]):
             Favorite activities: {fav_activities}",
         config=types.GenerateContentConfig(
             tools=tools,
-            # system_instruction=os.getenv('system_instruction_analysis')
             system_instruction=system_instruction_analysis
         )
     )
@@ -104,7 +100,6 @@ def get_itenary(city_name:str,num_days:int,fav_activities:list[str]):
             Favorite activities: {fav_activities}",
         config=types.GenerateContentConfig(
             tools=tools,
-            # system_instruction=os.getenv('system_instruction_analysis')
             system_instruction=system_instruction_itenary
         )
     )
@@ -195,7 +190,28 @@ if st.sidebar.button("Submit", type="secondary"):
             fav_activities=fav_activities
         ))
 
-    
+
+
+#crediting openweather api
+st.markdown(
+    """
+    <style>
+    .footer {
+        position: absolute;
+        bottom: 0;
+        right: 10px;
+        font-size: 9px;
+        color: gray;
+    }
+    </style>
+    <div class="footer">
+        Weather data provided by OpenWeather<br>
+        https://openweathermap.org/ 
+    </div>
+    """, 
+    unsafe_allow_html=True
+)
+ 
 
 
 
