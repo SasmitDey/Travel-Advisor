@@ -127,6 +127,7 @@ def get_itenary(city_name:str,num_days:int,fav_activities:list[str]):
 
 #streamlit app
 st.header('🧳 AI POWERED TRAVEL ADVISOR')
+st.markdown("<hr style='border: 2px solid #333;'>", unsafe_allow_html=True)
 st.set_page_config(
     page_title='AI Travel Advisor',
     page_icon='🧳',
@@ -145,7 +146,7 @@ num_days = st.sidebar.slider("Number of days",0,5,2,help="Enter number of days y
 activities = st.sidebar.text_input(
     "Favorite activities",
     value="Hiking Surfing Shopping",
-    help="Activities should be seperated by space."
+    help="Activities should be seperated by space"
 )
 fav_activities=activities.split(' ')
 
