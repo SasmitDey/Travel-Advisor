@@ -7,3 +7,4 @@ venv/
 #streamlit folder
 # .streamlit/
 secrets.toml
+config.toml
