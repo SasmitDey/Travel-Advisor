@@ -11,6 +11,9 @@ openweather_api_key=os.getenv('openweather_api_key')
 gemini_api_key=os.getenv('gemini_api_key')
 system_instruction_analysis=os.getenv('system_instruction_analysis')
 
+num_days=3
+fav_activities=['hiking','swimming','jogging']
+
 
 #initialising gemini model
 client=genai.Client(
@@ -64,7 +67,9 @@ def get_analysis(city_name:str):
         contents=f"\
             Forecast data: {get_forecast(city_name)}\
             City Name: {city}\
-            Country Code: {country}",
+            Country Code: {country}\
+            Number of days: {num_days}\
+            Favorite activities: {fav_activities}",
         config=types.GenerateContentConfig(
             tools=tools,
             # system_instruction=os.getenv('system_instruction_analysis')
