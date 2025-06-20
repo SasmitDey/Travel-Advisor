@@ -8,24 +8,17 @@ import time
 
 
 #laoding environment variables
-load_dotenv()
-openweather_api_key=os.getenv('openweather_api_key')
-gemini_api_key=os.getenv('gemini_api_key')
+# load_dotenv()
+# openweather_api_key=os.getenv('openweather_api_key')
+# gemini_api_key=os.getenv('gemini_api_key')
+
+gemini_api_key=st.secrets["gemini_api_key"]
+openweather_api_key=st.secrets["openweather_api_key"]
+system_instruction_analysis=st.secrets["model"]["system_instruction_analysis"]
+system_instruction_itenary=st.secrets["model"]["system_instruction_itenary"]
+
+
 # system_instruction_analysis=os.getenv('system_instruction_analysis')
-system_instruction_analysis="You are given a weather forecast for a number of days which is also\
-provided for a city in json format.\
-You are to give a travel advisory for ONLY that many number of days\
-by analysing the data. Focus on overall days and not the time.\
-You are also provided a list of some activities the traveller likes. Integrate\
-these activities into your analysis. If the weather is good or bad for a particular activity from the list\
-inform the traveller of the same.\
-Do this in about 200 words in a blog post style. Nothing else.\
-Ensure it is in a human readable language and looks like it is written by a human. Do not write \
-words like 'analysis' and use more human words like 'thoughts'.\
-DO NOT USE ANY UNRELATED SPECIAL CHARACTERS LIKE ASTERISKS (*) OR DOUBLE ASTERISKS (**).\
-For time format, use the local time of the place provided.\
-Finally, write a conclusion style final analysis paragraph in 100 words max.\
-End off in a friendly note."
 
 
 
@@ -110,6 +103,27 @@ def get_analysis(city_name:str,num_days:int,fav_activities:list[str]):
         time.sleep(0.02)
 
 
+def get_itenary(city_name:str,num_days:int,fav_activities:list[str]):
+    _,_,city,country=get_lat_lon(city_name)
+    response = client.models.generate_content_stream(
+        model='models/gemini-2.5-flash-preview-05-20',
+        contents=f"\
+            Forecast data: {get_forecast(city_name)}\
+            City Name: {city}\
+            Country Code: {country}\
+            Number of days: {num_days}\
+            Favorite activities: {fav_activities}",
+        config=types.GenerateContentConfig(
+            tools=tools,
+            # system_instruction=os.getenv('system_instruction_analysis')
+            system_instruction=system_instruction_itenary
+        )
+    )
+    for chunk in response:
+        yield chunk.text
+        time.sleep(0.02)
+
+
 
 #streamlit app
 st.header('🧳 AI POWERED TRAVEL ADVISOR')
@@ -130,20 +144,42 @@ city_name = st.sidebar.text_input(
 num_days = st.sidebar.slider("Number of days",0,5,2,help="Enter number of days you want to travel for")
 activities = st.sidebar.text_input(
     "Favorite activities",
-    value="Hiking Surfing Shopping...",
+    value="Hiking Surfing Shopping",
     help="Activities should be seperated by space."
 )
 fav_activities=activities.split(' ')
 
 
 #write analysis
-st.write_stream(
-    get_analysis(
-        city_name=city_name,
-        num_days=num_days,
-        fav_activities=fav_activities
-    )
-)
+# st.write_stream(
+#     get_analysis(
+#         city_name=city_name,
+#         num_days=num_days,
+#         fav_activities=fav_activities
+#     )
+# )
+
+
+#button for submitting info
+if st.sidebar.button("Submit", type="secondary"):
+    st.header("☁Your weather forecast analysis☁")
+    with st.spinner(f"Thinking..."):
+        st.write_stream(get_analysis(
+            city_name=city_name,
+            num_days=num_days,
+            fav_activities=fav_activities
+        ))
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.header("✈Your travel itenary")
+    with st.spinner(f"Preparing itenary..."):
+        st.write_stream(get_itenary(
+            city_name=city_name,
+            num_days=num_days,
+            fav_activities=fav_activities
+        ))
+
+    
+
 
 
 
