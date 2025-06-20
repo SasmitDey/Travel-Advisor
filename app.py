@@ -20,17 +20,17 @@ client=genai.Client(
 tools=[]
 tools.append(types.Tool(google_search=types.GoogleSearch))
 
-response=client.models.generate_content(
-    model='models/gemini-2.5-flash-preview-05-20',
-    contents='',
-    config=types.GenerateContentConfig(
-        tools=tools
-    )
-)
+# response=client.models.generate_content(
+#     model='models/gemini-2.5-flash-preview-05-20',
+#     contents='',
+#     config=types.GenerateContentConfig(
+#         tools=tools
+#     )
+# )
 
 
 #getting latitude and longitude from city name (state only supported for usa)
-def get_lat_lon(city_name:str):
+def get_lat_lon(city_name:str):     #returns lat,long,cityName and country
     url='http://api.openweathermap.org/geo/1.0/direct'
     params={
         'q' : city_name,
@@ -38,12 +38,13 @@ def get_lat_lon(city_name:str):
     }
     req = requests.get(url,params=params)
     response = req.json()
-    return response[0]['lat'], response[0]['lon']
+    return response[0]['lat'], response[0]['lon'],response[0]['name'],response[0]['country']
+
 
 
 def get_forecast(city_name:str):
     url='https://api.openweathermap.org/data/2.5/forecast'
-    lat,lon=get_lat_lon(city_name)
+    lat,lon,_,_=get_lat_lon(city_name)
     params={
         'lat':lat,
         'lon':lon,
@@ -53,8 +54,22 @@ def get_forecast(city_name:str):
     }
     req = requests.get(url,params=params)
     response = req.json()
-    print(response)
+    return response
 
 
-
-get_forecast('new delhi')
+def get_analysis(city_name:str):
+    _,_,city,country=get_lat_lon(city_name)
+    response = client.models.generate_content(
+        model='models/gemini-2.5-flash-preview-05-20',
+        contents=f"\
+            Forecast data: {get_forecast(city_name)}\
+            City Name: {city}\
+            Country Code: {country}",
+        config=types.GenerateContentConfig(
+            tools=tools,
+            system_instruction=os.getenv('system_instruction_analysis')
+        )
+    )
+    print(response.text)
+    
+get_analysis('new delhi')
