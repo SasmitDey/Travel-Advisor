@@ -121,7 +121,7 @@ def get_itenary(city_name:str,num_days:int,fav_activities:list[str]):
 
 
 #streamlit app
-st.header('🧳 AI POWERED TRAVEL ADVISOR')
+st.header('🧳 Your Custom Trip Companion')
 st.markdown("<hr style='border: 2px solid #333;'>", unsafe_allow_html=True)
 st.set_page_config(
     page_title='AI Travel Advisor',
@@ -129,18 +129,22 @@ st.set_page_config(
     layout='wide'
 )
 
-st.sidebar.header('Your data')
 
-city_name = st.sidebar.text_input(
-    "City Name",
-    value="New Delhi",
-    help="Enter name of the city you want to travel to"
-)
+#sidebar customisation
+st.sidebar.header('Trip Details')
+with st.form(key="trip_details"):
+    city_name = st.sidebar.text_input(
+        "Where are you headed?",
+        value="New Delhi",
+        help="Enter name of the city you want to travel to"
+    )
 
+
+#parameters for model
 lat,lon,_,_=get_lat_lon(city_name)
-num_days = st.sidebar.slider("Number of days",0,5,2,help="Enter number of days you want to travel for")
+num_days = st.sidebar.slider("How many days?",0,5,2,help="Enter number of days you want to travel for")
 activities = st.sidebar.text_input(
-    "Favorite activities",
+    "Things you love to do",
     value="Hiking Surfing Shopping",
     help="Activities should be seperated by space"
 )
@@ -170,9 +174,11 @@ if st.sidebar.button("Submit", type="secondary"):
     st.map(
         map_data_df,
         zoom=12,
-        size=0.0
+        size=0.0,
+        height=350
     )
-    st.header("☁Your weather forecast analysis☁")
+    # st.header("☁Your weather forecast analysis☁")
+    st.header("☀️ Weather Outlook for Your Trip")
     with st.spinner(f"Thinking..."):
         st.write_stream(get_analysis(
             city_name=city_name,
@@ -180,7 +186,8 @@ if st.sidebar.button("Submit", type="secondary"):
             fav_activities=fav_activities
         ))
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.header("✈Your travel itenary")
+    # st.header("✈Your travel itenary")
+    st.header("📅 Your Itinerary")
     with st.spinner(f"Preparing itenary..."):
         st.write_stream(get_itenary(
             city_name=city_name,
