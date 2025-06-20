@@ -157,8 +157,6 @@ fav_activities=activities.split(' ')
 # )
 
 
-
-
 map_data = {
     'lat' : [lat],
     'lon' : [lon],
@@ -167,14 +165,12 @@ map_data_df = pd.DataFrame(map_data)
 
 
 
-
-
 #button for submitting info
 if st.sidebar.button("Submit", type="secondary"):
     st.map(
         map_data_df,
-        color='#FF0000',
-        zoom=12
+        zoom=12,
+        size=0.0
     )
     st.header("☁Your weather forecast analysis☁")
     with st.spinner(f"Thinking..."):
