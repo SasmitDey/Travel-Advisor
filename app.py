@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import requests
 import streamlit as st
 import time
+import pandas as pd
 
 
 #laoding environment variables
@@ -40,18 +41,6 @@ tools.append(types.Tool(google_search=types.GoogleSearch))
 #         tools=tools
 #     )
 # )
-def get_image_url(city_name:str):
-    response = client.models.generate_content(
-        model='models/gemini-2.5-flash-preview-05-20',
-        contents=f"Give one url for a high quality image about {city_name}. \
-            Give only the url for an IMAGE, not a website, and nothing else.\
-            Image link should be from unsplash",
-        config=types.GenerateContentConfig(
-            tools=tools,
-        )
-    )
-    url=response.text
-    return url
 
 
 #getting latitude and longitude from city name (state only supported for usa)
@@ -125,6 +114,12 @@ def get_itenary(city_name:str,num_days:int,fav_activities:list[str]):
 
 
 
+
+
+
+
+
+
 #streamlit app
 st.header('🧳 AI POWERED TRAVEL ADVISOR')
 st.markdown("<hr style='border: 2px solid #333;'>", unsafe_allow_html=True)
@@ -142,6 +137,7 @@ city_name = st.sidebar.text_input(
     help="Enter name of the city you want to travel to"
 )
 
+lat,lon,_,_=get_lat_lon(city_name)
 num_days = st.sidebar.slider("Number of days",0,5,2,help="Enter number of days you want to travel for")
 activities = st.sidebar.text_input(
     "Favorite activities",
@@ -161,8 +157,25 @@ fav_activities=activities.split(' ')
 # )
 
 
+
+
+map_data = {
+    'lat' : [lat],
+    'lon' : [lon],
+}
+map_data_df = pd.DataFrame(map_data)
+
+
+
+
+
 #button for submitting info
 if st.sidebar.button("Submit", type="secondary"):
+    st.map(
+        map_data_df,
+        color='#FF0000',
+        zoom=12
+    )
     st.header("☁Your weather forecast analysis☁")
     with st.spinner(f"Thinking..."):
         st.write_stream(get_analysis(
