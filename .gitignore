@@ -5,4 +5,5 @@ venv/
 .env
 
 #streamlit folder
-.streamlit/
+# .streamlit/
+secrets.toml
