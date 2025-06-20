@@ -9,7 +9,7 @@ import requests
 load_dotenv()
 openweather_api_key=os.getenv('openweather_api_key')
 gemini_api_key=os.getenv('gemini_api_key')
-
+system_instruction_analysis=os.getenv('system_instruction_analysis')
 
 
 #initialising gemini model
@@ -67,9 +67,11 @@ def get_analysis(city_name:str):
             Country Code: {country}",
         config=types.GenerateContentConfig(
             tools=tools,
-            system_instruction=os.getenv('system_instruction_analysis')
+            # system_instruction=os.getenv('system_instruction_analysis')
+            system_instruction=system_instruction_analysis
         )
     )
-    print(response.text)
-    
-get_analysis('new delhi')
+    return response.text
+
+weather_analysis = get_analysis('new delhi')
+print(weather_analysis)
