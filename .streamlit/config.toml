@@ -1,0 +1,25 @@
+[theme]
+
+base = "dark"
+
+primaryColor = "#ffffff"
+
+backgroundColor = "#121212"
+
+secondaryBackgroundColor = "#BDBDBD1A"
+
+textColor = "#ffffff"
+
+font = "poppins, sans-serif"
+
+
+
+[theme.sidebar]
+
+primaryColor = "#ffffff"
+
+backgroundColor = "#BDBDBD1A"
+
+textColor = "#ffffff"
+
+font = "poppins, sans-serif"
