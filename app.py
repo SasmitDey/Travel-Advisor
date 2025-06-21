@@ -121,7 +121,8 @@ st.markdown("<hr style='border: 2px solid #333;'>", unsafe_allow_html=True)
 st.set_page_config(
     page_title='AI Travel Advisor',
     page_icon='🧳',
-    layout='wide'
+    layout='wide',
+    initial_sidebar_state="expanded"
 )
 
 
